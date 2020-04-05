@@ -15,11 +15,24 @@ ecdc$year <- as.numeric(ecdc$year)
 ecdc$popData2018 <- as.numeric(ecdc$popData2018)
 ecdc$cases <- as.numeric(ecdc$cases)
 ecdc$dateRep <- as.Date(ecdc$dateRep)
-ecd <- as.data.frame(ecdc %>% arrange(dateRep) %>% filter(deaths>5))
+#ecd <- as.data.frame(ecdc)
 
-ecd <- ecd %>% mutate(casespm = cases/popData2018*1e+06, deathspm=deaths/popData2018*1e+06)
+ecd <- ecdc %>% filter(deaths>0 & cases>0, popData2018>35000) %>%  mutate(casespm = cases/popData2018*1e+06, deathspm=deaths/popData2018*1e+06)
 
-ecd %>% filter(countriesAndTerritories=="Belgium") %>% summarize(cpm= sum(casespm), dpm=sum(deathspm))
+ecd %>% filter(countriesAndTerritories=="San_Marino") %>% summarize(cpm= sum(casespm), dpm=sum(deathspm)) %>% 
+  mutate(Country="Belgium")
+
+ecdsum <- NULL
+
+for (country in unique(ecd$countriesAndTerritories)) {
+  
+  ecd1 <- ecd %>% filter(countriesAndTerritories==country) %>% 
+    summarize(cpm= sum(casespm), dpm=sum(deathspm)) %>% 
+    mutate(Country=country)
+  
+  ecdsum <- rbind(ecdsum, ecd1)
+  
+}
 
 
 ggplot(ecd %>% filter(dateRep=="05-04-2020") , aes(cases, deaths, label=countriesAndTerritories)) + 
@@ -62,10 +75,10 @@ ggplot(ecd %>% filter(dateRep=="05-04-2020") , aes(cases, deaths, label=countrie
 
 #PER MILLION PEOPLE
 
-ggplot(ecd %>% filter(dateRep=="4-04-2020") , aes(cases/popData2018*1000000, deaths/popData2018*1000000, label=countriesAndTerritories)) + 
-  geom_point(aes(col=countryterritoryCode),shape = 21,fill = "red", size = 5, stroke = 5, alpha = 1/2)+
-  scale_x_log10(breaks = c(1, 2, 3, 5, 10, 15, 25, 40, 60,100, 500))+
-  scale_y_log10(breaks= c(0.1, 0.2, 0.3, 0.5, 0.75, 1.5,  1,2,3, 5, 10, 20, 35))+
+ggplot(ecdsum , aes(cpm, dpm, label=Country)) + 
+  geom_point(aes(col=Country),shape = 21,fill = "red", size = 5, stroke = 5, alpha = 1/2)+
+  scale_x_log10(breaks = c(1, 5, 10, 20, 50,100, 500, 1000, 2000,5000))+
+  scale_y_log10(breaks= c(0.1, 1, 5, 10, 20, 50, 100, 350))+
   geom_text_repel(size=4)+
   xlab("Tested Positive")+
   ylab("Deaths")+
@@ -93,8 +106,7 @@ ggplot(ecd %>% filter(dateRep=="4-04-2020") , aes(cases/popData2018*1000000, dea
         plot.subtitle = element_text(size = 15)
   )+
   labs(title = "Daily nCov19", subtitle = date(), caption="Source : European Centre for Disease Prevention and Control")+
-  
-  annotate("text", x = 500  , y = 0.01, label = "Datastak",
+  annotate("text", x = 2500  , y = 0.01, label = "Datastak",
            hjust=0.8, vjust=0.2, col="black", cex=6, alpha = 0.05)
 
 
