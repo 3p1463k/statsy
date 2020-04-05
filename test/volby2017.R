@@ -1,4 +1,6 @@
 library(RCzechia)
+library(ggplot2)
+library(ggthemes)
 
 cz <- RCzechia::kraje("low")
 
@@ -13,20 +15,17 @@ v2 <- v2 %>% slice(2:nrow(v2))
 v2 <- data.frame(lapply(v2, as.numeric), stringsAsFactors=FALSE)
 v2 <-  v2 %>% mutate(NAZ_CZNUTS3= names(v1)[2:ncol(v1)])
 
+v3 <- v2 %>% select("ANO", "NAZ_CZNUTS3")
+
+v2017 <-  cz %>% inner_join(v3, by = "NAZ_CZNUTS3")
 
 
 
-ano <- v1 %>% filter(Name=="ANO")
-ano1 <- ano %>% as.data.frame(t(ano))
-
-
-ggplot(data = ano) +
-  geom_sf(aes(fill=CelkemČR)) +
-  scale_fill_continuous(high = "#DC143C", low = "goldenrod")+
-  geom_sf_text(aes(label=Pocet), size=5)+
+ggplot(data = v2017) +
+  geom_sf(aes(fill=ANO)) +
+  scale_fill_continuous(high = "#104E8B", low = "white")+
+  geom_sf_text(aes(label=round(ANO/1000,0)), size=5)+
   theme_wsj()+
-  ggtitle("Nakazeno v Kraji / Infected by Region")+
-  
   theme(axis.text = element_text(colour = "white"),
         axis.ticks = element_line(colour = "white"),
         plot.background = element_rect(fill = "white", color="black"),
@@ -34,6 +33,14 @@ ggplot(data = ano) +
         panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
         axis.line = element_blank(),
         plot.title = element_text(size = "18"),
-        legend.position = "none", 
+        legend.position = "none",
+        title = element_text(size=20),
+        plot.caption=element_text(color = "black",  hjust=1.01, size=10),
+        plot.margin = unit(c(15, 25, 5, 5), "pt"),
+        plot.subtitle = element_text(size = 15)
         
-  )
+  )+
+  labs(title = "ANO" , subtitle ="Volebni vysledky do PS 2017 v Krajich", caption="ZDROJ: Český statistický úřad")+
+  
+  annotate("text", x = 19.5  , y = 48.5, label = "Datastak",
+            hjust=0.8, vjust=0.2, col="black", cex=6, alpha = 0.1)
