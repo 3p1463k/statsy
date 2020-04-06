@@ -45,3 +45,42 @@ ggplot(data = v2017) +
   
   annotate("text", x = 19.5  , y = 48.5, label = "Datastak",
             hjust=0.8, vjust=0.2, col="black", cex=6, alpha = 0.1)
+
+
+for (party in names(v2)) {
+  v3 <- v2 %>% select(all_of(party), "NAZ_CZNUTS3")
+  v2017 <-  cz %>% inner_join(v3, by = "NAZ_CZNUTS3")
+  
+  ggplot(data = v2017) +
+    geom_sf(aes(fill=party)) +
+    scale_fill_continuous(high = "#104E8B", low = "white")+
+    geom_sf_text(aes(label=round(party/1000,0)), size=5)+
+    theme_wsj()+
+    theme(axis.text = element_text(colour = "white"),
+          axis.ticks = element_line(colour = "white"),
+          plot.background = element_rect(fill = "white", color="black"),
+          panel.background = element_rect(fill ="white", color = "#17202A"),
+          panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
+          axis.line = element_blank(),
+          plot.title = element_text(size = "18"),
+          legend.position = "none",
+          title = element_text(size=20),
+          plot.caption=element_text(color = "black",  hjust=1.01, size=10),
+          plot.margin = unit(c(15, 25, 5, 5), "pt"),
+          plot.subtitle = element_text(size = 15)
+          
+    )+
+    labs(title = party , subtitle ="Volebni vysledky do PS 2017 v Krajich", caption="ZDROJ: Český statistický úřad")+
+    
+    annotate("text", x = 19.5  , y = 48.5, label = "Datastak",
+             hjust=0.8, vjust=0.2, col="black", cex=6, alpha = 0.1)
+  filename <- paste0(party, ".png", sep="")
+  ggsave(filename=filename, path= "/cloud/project/data/img/test/", device = png)
+  
+    
+}
+
+
+
+
+
