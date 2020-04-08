@@ -120,7 +120,7 @@ europeanUnion <- c("Austria","Belgium","Bulgaria","Croatia","Cyprus",
                    "Portugal","Romania","Slovakia","Slovenia","Spain",
                    "Sweden","United_Kingdom")
 
-EU <- ecdc %>%filter(countriesAndTerritories%in%europeanUnion)
+EU <- ecd %>%filter(countriesAndTerritories%in%europeanUnion)
 
 EU$day <- as.numeric(EU$day)
 EU$month <- as.numeric(EU$month)
@@ -135,13 +135,13 @@ EU1 <- EU %>% mutate(casespm = cases/popData2018*1e+06, deathspm=deaths/popData2
 
 eusum <- NULL
 
-for (country in unique(EU1$countriesAndTerritories)) {
+for (c in unique(EU1$countriesAndTerritories)) {
   
-  EU2 <- EU1 %>% filter(countriesAndTerritories==country) %>% 
-    summarize(cpm= sum(casespm), dpm=sum(deathspm)) %>% 
-    mutate(Country=country)
+  EU2 <- EU1 %>% filter(countriesAndTerritories==c) %>% 
+    summarize(cpmeu= sum(casespm), dpmeu=sum(deathspm)) %>% 
+    mutate(Country=c)
   
-  eusum <- rbind(eusum, EU2)
+  eusum <- rbind(EU2, eusum)
   
 }
 
@@ -156,10 +156,10 @@ for (country in unique(EU1$countriesAndTerritories)) {
 
 
 
-ggplot(EU2 , aes(cpm, dpm, label=Country)) + 
-  geom_point(aes(col=Country),shape = 21,fill = "red", size = 5, stroke = 5, alpha = 1/2)+
-  scale_x_log10(breaks = c(1, 5, 10, 20, 50,100, 500, 1000, 2000,5000))+
-  scale_y_log10(breaks= c(0.1, 1, 5, 10, 20, 50, 100, 350))+
+ggplot(eusum , aes(cpmeu, dpmeu, label=Country)) + 
+  geom_point(aes(col=Country),shape = 21,fill = "red", size = 6, stroke = 6, alpha = 1/2)+
+  scale_x_log10(breaks = c(1, 5, 10, 20, 50,100, 500, 1000, 2000,4000))+
+  scale_y_log10(breaks= c(1, 5, 10, 20, 50, 100, 200, 400))+
   geom_text_repel(size=4)+
   xlab("Tested Positive per million")+
   ylab("Deaths per million")+
@@ -186,7 +186,7 @@ ggplot(EU2 , aes(cpm, dpm, label=Country)) +
         plot.margin = unit(c(15, 25, 5, 5), "pt"),
         plot.subtitle = element_text(size = 15)
   )+
-  labs(title = "Daily nCov19 World Total", subtitle = date(), caption="Source : European Centre for Disease Prevention and Control")+
-  annotate("text", x = 2500  , y = 0.01, label = "Datastak",
+  labs(title = "Daily nCov19 Europe Total", subtitle = date(), caption="Source : European Centre for Disease Prevention and Control")+
+  annotate("text", x = 4000  , y = 0.01, label = "Datastak",
            hjust=0.8, vjust=0.2, col="black", cex=6, alpha = 0.05)
 
