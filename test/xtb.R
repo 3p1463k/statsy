@@ -8,10 +8,11 @@ xtb_web <- read_html("https://www.xtb.com/cz/nabidka/informace-o-uctech/specifik
 tbls <- html_nodes(xtb_web, "table")
 tbls
 
-tbls_ls1 <- webpage %>%
+tbls_ls <- xtb_web %>%
   html_nodes("table") %>%
-  .[0] %>%
+  .[2] %>%
   html_table(fill = TRUE)
-gdp1 <- as.data.frame(tbls_ls1)
+
+xtb <- as.data.frame(tbls_ls)
 
 

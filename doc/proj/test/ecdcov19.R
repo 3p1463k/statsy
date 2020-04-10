@@ -160,7 +160,7 @@ ggplot(eusum , aes(cpmeu, dpmeu, label=Country)) +
   geom_point(aes(col=Country),shape = 21,fill = "red", size = 6, stroke = 6, alpha = 1/2)+
   scale_x_log10(breaks = c(1, 5, 10, 20, 50,100, 500, 1000, 2000,4000))+
   scale_y_log10(breaks= c(1, 5, 10, 20, 50, 100, 200, 400))+
-  geom_text_repel(size=4)+
+  geom_text_repel(size=5)+
   xlab("Tested Positive per million")+
   ylab("Deaths per million")+
   theme_minimal()+
